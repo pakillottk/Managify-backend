@@ -1,21 +1,20 @@
 <?php
 namespace App\Domains\Database\Jobs;
 
+use App\Data\Repositories\Repository;
 use Lucid\Foundation\Job;
 
-class CreateCompanyJob extends Job
+class GetModelRepositoryJob extends Job
 {
-    private $data;
-    private $repo;
+    private $model;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct( $repo, $data )
+    public function __construct( $model )
     {
-        $this->repo = $repo;
-        $this->data = $data;
+        $this->model = $model;
     }
 
     /**
@@ -25,6 +24,6 @@ class CreateCompanyJob extends Job
      */
     public function handle()
     {
-        return $this->repo->fill( $this->data );
+        return new Repository( $this->model );
     }
 }

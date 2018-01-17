@@ -20,10 +20,11 @@ class CreatePermissionsTable extends Migration
             $table->boolean( 'read' )->default( true );
             $table->boolean( 'write' )->default( false );
             $table->boolean( 'delete' )->default( false );
-            $table->integer( 'user_id' )->unsigned();
-            $table  ->foreign( 'user_id' )
+            $table->integer( 'rol_id' )->unsigned();
+            
+            $table  ->foreign( 'rol_id' )
                     ->references( 'id' )
-                    ->on( 'users' )
+                    ->on( 'roles' )
                     ->onDelete( 'cascade' );
 
             $table->timestamps();

@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 //Database related
 use App\Domains\Database\Jobs\GetModelRepositoryJob;
-use App\Domains\Database\Jobs\CreateModelInstanceJob;
+use App\Domains\Database\Jobs\FindRegisterJob;
 use App\Domains\Database\Jobs\FillWithRepoJob;
 use App\Domains\Database\Jobs\SaveModelJob;
 
@@ -18,30 +18,42 @@ use App\Domains\Http\Jobs\FormatCompanyToJsonJob;
 use App\Domains\Http\Jobs\RespondWithJsonJob;
 use App\Domains\Http\Jobs\RespondWithJsonErrorJob;
 
-use Exception;
-
-class CreateCompanyFeature extends Feature
+class UpdateCompanyFeature extends Feature
 {
+    private $id;
+
+    public function __construct( $id ) {
+        $this->id = (int) $id;
+    }
+
     public function handle( Request $request )
-    {   
+    {
         try {
             $validatedInput = $this->run( ValidateInputForCompanyJob::class, [
                 'input' => $request->input()
             ]);
             
-            $company = $this->run( CreateModelInstanceJob::class, [
-                'namespace' => '\Framework\Company' 
+            $repo = $this->run( GetModelRepositoryJob::class, [
+                'model' => new \Framework\Company()
             ]);
 
+            $company = $this->run( FindRegisterJob::class, [
+                'repo' => $repo,
+                'field' => [
+                    'name' => 'id',
+                    'value' => $this->id
+                ]
+            ]);            
+                
             $repo = $this->run( GetModelRepositoryJob::class, [
                 'model' => $company
             ]);
-            
+
             $company = $this->run( FillWithRepoJob::class, [
                 'repo' => $repo,
                 'data' => $validatedInput
             ]);
-
+            
             $company = $this->run( SaveModelJob::class, [
                 'model' => $company
             ]);
@@ -50,9 +62,9 @@ class CreateCompanyFeature extends Feature
                 'company' => $company
             ]);
 
-            return $this->run( new RespondWithJsonJob( $company ) );            
+            return $this->run( new RespondWithJsonJob( $company ) ); 
         } catch( Exception $e ) {
             return $this->run( new RespondWithJsonErrorJob( $e->getMessage() ) );
-        }        
+        }
     }
 }

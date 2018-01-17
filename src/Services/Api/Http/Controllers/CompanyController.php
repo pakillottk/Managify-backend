@@ -5,6 +5,8 @@ use Illuminate\Http\Request;
 use Lucid\Foundation\Http\Controller;
 
 use App\Services\Api\Features\CreateCompanyFeature;
+use App\Services\Api\Features\UpdateCompanyFeature;
+use App\Services\Api\Features\DeleteCompanyFeature;
 
 class CompanyController extends Controller
 {
@@ -25,7 +27,7 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        return $this->serve( CreateCompanyFeature::class );
+        
     }
 
     /**
@@ -36,7 +38,7 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return $this->serve( CreateCompanyFeature::class );
     }
 
     /**
@@ -70,7 +72,7 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        return $this->serve( UpdateCompanyFeature::class, [ 'id' => $id ] );
     }
 
     /**
@@ -81,6 +83,6 @@ class CompanyController extends Controller
      */
     public function destroy($id)
     {
-        //
+        return $this->serve( DeleteCompanyFeature::class, [ 'id' => $id ] );
     }
 }

@@ -22,11 +22,16 @@ class CreateUsersTable extends Migration
             $table->string( 'email' )->nullable();
             $table->string( 'avatar_url' )->nullable();
             $table->integer( 'company_id' )->unsigned()->nullable();
-                
+            $table->integer( 'role_id' )->unsigned()->nullable();
+
             $table  ->foreign( 'company_id' )
                     ->references( 'id' )
                     ->on( 'companies' )
                     ->onDelete( 'cascade' );
+
+            $table  ->foreign( 'role_id' )
+                    ->references( 'id' )
+                    ->on( 'roles' );
 
             $table->timestamps();
         });

@@ -21,8 +21,10 @@ Route::group(['prefix' => ''], function() {
         return response()->json(['path' => '/api/api']);
     });
     
-    Route::post('/companies', 'CompanyController@create' );   
-    
+    Route::post('/companies', 'CompanyController@store' ); 
+    Route::put('/companies/{id}', 'CompanyController@update' );   
+    Route::delete( '/companies/{id}', 'CompanyController@destroy' );
+
     Route::middleware('auth:api')->get('/user', function (Request $request) {
         return $request->user();
     });
