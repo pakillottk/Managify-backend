@@ -4,23 +4,30 @@ namespace App\Services\Api\Http\Controllers;
 use Illuminate\Http\Request;
 use Lucid\Foundation\Http\Controller;
 
-use App\Services\Api\Features\GetCompaniesFeature;
-use App\Services\Api\Features\CreateCompanyFeature;
-use App\Services\Api\Features\UpdateCompanyFeature;
-use App\Services\Api\Features\DeleteCompanyFeature;
+use App\Services\Api\Features\CreateRoleFeature;
 
-class CompanyController extends Controller
+class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index( Request $request )
+    public function index()
     {
-        return $this->serve( GetCompaniesFeature::class );
+        
     }
-    
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -29,7 +36,29 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        return $this->serve( CreateCompanyFeature::class );
+        $this->serve( CreateRoleFeature::class );
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
     }
 
     /**
@@ -41,7 +70,7 @@ class CompanyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        return $this->serve( UpdateCompanyFeature::class, [ 'id' => $id ] );
+        //
     }
 
     /**
@@ -52,6 +81,6 @@ class CompanyController extends Controller
      */
     public function destroy($id)
     {
-        return $this->serve( DeleteCompanyFeature::class, [ 'id' => $id ] );
+        //
     }
 }

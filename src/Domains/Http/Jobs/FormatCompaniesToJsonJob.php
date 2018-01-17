@@ -4,23 +4,22 @@ namespace App\Domains\Http\Jobs;
 use Lucid\Foundation\Job;
 use App\Data\Transformers\CompanyTransformer;
 
-class FormatCompanyToJsonJob extends Job
+class FormatCompaniesToJsonJob extends Job
 {
-    private $company;
+    private $companies;
     private $transformer;
-    private $toHide;
+    private $toHide = [];
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct( $company, $toHide = [] )
+    public function __construct( $companies, $toHide = [] )
     {
-        $this->company = $company;
+        $this->companies = $companies;
         $this->transformer = new CompanyTransformer();
         $this->toHide = $toHide;
     }
-
     /**
      * Execute the job.
      *
@@ -28,6 +27,11 @@ class FormatCompanyToJsonJob extends Job
      */
     public function handle()
     {
-        return $this->transformer->transform( $this->company, $this->toHide  );
+        $output = [];
+        foreach( $this->companies as $company ) {
+            array_push( $output, $this->transformer->transform( $company, $this->toHide ) );
+        }
+
+        return $output;
     }
 }
