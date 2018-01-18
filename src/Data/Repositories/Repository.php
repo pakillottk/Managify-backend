@@ -2,6 +2,8 @@
 
 namespace App\Data\Repositories;
 
+use App\Data\Queries\Query;
+
 /**
  * Base Repository.
  */
@@ -143,6 +145,28 @@ class Repository
         }
 
         return $query->orderBy($orderBy, $sorting)->get()();
+    }
+
+    /** 
+    * Returns a query result using the custom Query object
+    * as the select parameters.
+    *
+    * @param Query $query
+    *
+    * @return \Illuminate\Database\Eloquent\Model
+    */
+    public function getByQuery( ?Query $query ) {
+        if( $query === null ) {
+            return $this->all();
+        }
+
+        return $this->model
+                    ->where( $query->getSelect() )
+                    ->orderBy( $query->getOrderBy(), $query->getSorting() )
+                    ->with( $query->getInclude() )
+                    ->take( 10 )
+                    ->skip( $query->getPage() )
+                    ->get();
     }
 
     /**

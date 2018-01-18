@@ -60,6 +60,9 @@ class ExtractQueryParametersJob extends Job
           
             foreach( $matches[0] as $clause){
                 $splittedByEquals = explode( '=', $clause ); 
+                if( $splittedByEquals[ 1 ] === 'null' ) {
+                    $splittedByEquals[ 1 ] = null;
+                }
                 $output[ $splittedByEquals[ 0 ] ] = $splittedByEquals[ 1 ];
             }
         }

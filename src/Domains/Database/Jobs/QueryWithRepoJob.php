@@ -24,28 +24,7 @@ class QueryWithRepoJob extends Job
      * @return void
      */
     public function handle()
-    {        
-        if( $this->query === null ) {
-            return $this->repo->all();
-        }
-
-        $page = $this->query->getPage();
-        $select = $this->query->getSelect();
-        if( empty( $select ) ) {
-            return $this->repo->page( 
-                10, 
-                $page, 
-                $this->query->getInclude(), 
-                $this->query->getOrderBy(), 
-                $this->query->getSorting() 
-            );
-        }
-        return $this->repo->getByAttributes( 
-            $select, 
-            'AND', 
-            $this->query->getInclude(),
-            $this->query->getOrderBy(), 
-            $this->query->getSorting()  
-        );
+    {       
+        return $this->repo->getByQuery( $this->query );
     }
 }
