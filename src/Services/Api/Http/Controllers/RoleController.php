@@ -4,7 +4,10 @@ namespace App\Services\Api\Http\Controllers;
 use Illuminate\Http\Request;
 use Lucid\Foundation\Http\Controller;
 
+use App\Services\Api\Features\GetRolesFeature;
 use App\Services\Api\Features\CreateRoleFeature;
+use App\Services\Api\Features\UpdateRoleFeature;
+use App\Services\Api\Features\DeleteRoleFeature;
 
 class RoleController extends Controller
 {
@@ -15,17 +18,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return $this->serve( GetRolesFeature::class ); 
     }
 
     /**
@@ -36,31 +29,9 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $this->serve( CreateRoleFeature::class );
+        return $this->serve( CreateRoleFeature::class );
     }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
+    
     /**
      * Update the specified resource in storage.
      *
@@ -70,7 +41,7 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        return $this->serve( UpdateRoleFeature::class, [ 'id' => $id ] );
     }
 
     /**
@@ -81,6 +52,6 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        //
+        return $this->serve( DeleteRoleFeature::class, [ 'id' => $id ] );
     }
 }

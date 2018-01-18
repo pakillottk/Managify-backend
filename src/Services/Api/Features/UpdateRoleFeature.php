@@ -12,8 +12,8 @@ use App\Domains\Database\Jobs\FillWithRepoJob;
 use App\Domains\Database\Jobs\SaveModelJob;
 
 //Specific
-use App\Domains\User\Jobs\ValidateInputForCompanyJob;
-use App\Domains\Http\Jobs\FormatCompanyToJsonJob;
+use App\Domains\User\Jobs\ValidateInputForRoleJob;
+use App\Domains\Http\Jobs\FormatRoleToJsonJob;
 
 //Responses
 use App\Domains\Http\Jobs\RespondWithJsonJob;
@@ -21,30 +21,30 @@ use App\Domains\Http\Jobs\RespondWithJsonErrorJob;
 
 use Exception;
 
-class UpdateCompanyFeature extends Feature
+class UpdateRoleFeature extends Feature
 {
     private $id;
 
     public function __construct( $id ) {
-        $this->id = (int) $id;
+        $this->id = $id;
     }
 
-    public function handle( Request $request )
+    public function handle(Request $request)
     {
         try {
-            $validatedInput = $this->run( ValidateInputForCompanyJob::class, [
+            $validatedInput = $this->run( ValidateInputForRoleJob::class, [
                 'input' => $request->input()
             ]);
 
-            $company = $this->run( CreateModelInstanceJob::class, [
-                'namespace' => '\Framework\Company' 
+            $role = $this->run( CreateModelInstanceJob::class, [
+                'namespace' => '\Framework\Role' 
             ]);
             
             $repo = $this->run( GetModelRepositoryJob::class, [
-                'model' => $company
+                'model' => $role
             ]);
 
-            $company = $this->run( FindRegisterJob::class, [
+            $role = $this->run( FindRegisterJob::class, [
                 'repo' => $repo,
                 'field' => [
                     'name' => 'id',
@@ -53,23 +53,23 @@ class UpdateCompanyFeature extends Feature
             ]);            
                 
             $repo = $this->run( GetModelRepositoryJob::class, [
-                'model' => $company
+                'model' => $role
             ]);
 
-            $company = $this->run( FillWithRepoJob::class, [
+            $role = $this->run( FillWithRepoJob::class, [
                 'repo' => $repo,
                 'data' => $validatedInput
             ]);
             
-            $company = $this->run( SaveModelJob::class, [
-                'model' => $company
+            $role = $this->run( SaveModelJob::class, [
+                'model' => $role
             ]);
 
-            $company = $this->run( FormatCompanyToJsonJob::class, [
-                'company' => $company
+            $role = $this->run( FormatRoleToJsonJob::class, [
+                'role' => $role
             ]);
 
-            return $this->run( new RespondWithJsonJob( $company ) ); 
+            return $this->run( new RespondWithJsonJob( $role ) ); 
         } catch( Exception $e ) {
             return $this->run( new RespondWithJsonErrorJob( $e->getMessage() ) );
         }

@@ -3,9 +3,10 @@
 namespace App\Data\Transformers;
 
 use App\Data\Transformers\BaseTransformer;
+use App\Data\Queries\Query;
 
 class CompanyTransformer extends BaseTransformer {
-    public function transform( $data, $toHide = [] ) {
+    public function transform( $data, ?Query $query ) {
         $company = $data; 
         $output = [
             'id' => (int) $company->id,
@@ -19,6 +20,6 @@ class CompanyTransformer extends BaseTransformer {
             'updated_at' => $company->updated_at
         ];
         
-        return $this->hideFields( $output, $toHide );
+        return $this->hideFields( $output, $query );
     }
 }

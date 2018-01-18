@@ -28,12 +28,13 @@ class ValidateInputForRoleJob extends Job
             throw new Exception( 'Role name is required' );
         }
 
-        if( !preg_match ( '/[a-Z 0-9]+/' , $this->input[ 'role_name' ] ) ) {
-            throw new Exception( 'Role name contains invalid characters. (Only numbers and letters are allowed)' );
+        if( !preg_match ( '/^[a-zA-Z0-9]+$/' , $this->input[ 'role_name' ] ) ) {
+            throw new Exception( 'Role name empty or contains invalid characters. (Only numbers and letters are allowed)' );
         }
 
         return [
-            'role_name' => (string) $this->input['role_name']
+            'role_name' => (string) trim( $this->input['role_name'] ),
+            'company_id' => isset( $this->input[ 'company_id' ] ) ? (int)$this->input[ 'company_id' ] : null
         ];
     }
 }

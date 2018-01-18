@@ -12,7 +12,7 @@ class QueryWithRepoJob extends Job
      *
      * @return void
      */
-    public function __construct( $repo, $query = [] )
+    public function __construct( $repo, $query = null )
     {
         $this->repo = $repo;
         $this->query = $query;
@@ -24,11 +24,15 @@ class QueryWithRepoJob extends Job
      * @return void
      */
     public function handle()
-    {
-        if( empty( $this->query ) ) {
+    {        
+        if( $this->query === null ) {
             return $this->repo->all();
         }
-        
-        return $this->repo->getByAttributes( $this->query );
+
+        $select = $this->query->getSelect();
+        if( empty( $select ) ) {
+            return $this->repo->all();
+        } 
+        return $this->repo->getByAttributes( $select );
     }
 }

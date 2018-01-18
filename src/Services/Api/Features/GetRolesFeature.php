@@ -13,7 +13,7 @@ use App\Domains\Database\Jobs\CreateModelInstanceJob;
 use App\Domains\Database\Jobs\QueryWithRepoJob;
 
 //Specific
-use App\Domains\Http\Jobs\FormatCompaniesToJsonJob;
+use App\Domains\Http\Jobs\FormatRolesToJsonJob;
 
 //Responses
 use App\Domains\Http\Jobs\RespondWithJsonJob;
@@ -21,7 +21,7 @@ use App\Domains\Http\Jobs\RespondWithJsonErrorJob;
 
 use Exception;
 
-class GetCompaniesFeature extends Feature
+class GetRolesFeature extends Feature
 {
     public function handle(Request $request)
     {
@@ -29,22 +29,22 @@ class GetCompaniesFeature extends Feature
             $query = $this->run( ExtractQueryParametersJob::class, [
                 'request' => $request
             ]);            
-            $company = $this->run( CreateModelInstanceJob::class, [
-                'namespace' => '\Framework\Company'
+            $role = $this->run( CreateModelInstanceJob::class, [
+                'namespace' => '\Framework\Role'
             ]);
             $repo = $this->run( GetModelRepositoryJob::class, [
-                'model' => $company
+                'model' => $role
             ]);
-            $companies = $this->run( QueryWithRepoJob::class, [
+            $roles = $this->run( QueryWithRepoJob::class, [
                 'repo' => $repo,
                 'query'=> $query
             ]);
-            $companies = $this->run( FormatCompaniesToJsonJob::class, [
-                'companies' => $companies,
+            $roles = $this->run( FormatRolesToJsonJob::class, [
+                'roles' => $roles,
                 'query' => $query
             ]);
 
-            return $this->run( new RespondWithJsonJob( $companies ) );       
+            return $this->run( new RespondWithJsonJob( $roles ) );       
         } catch( Exception $e ) {
             return $this->run( new RespondWithJsonErrorJob( $e->getMessage() ) );
         }

@@ -8,17 +8,17 @@ class FormatCompaniesToJsonJob extends Job
 {
     private $companies;
     private $transformer;
-    private $toHide = [];
+    private $query;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct( $companies, $toHide = [] )
+    public function __construct( $companies, $query = null )
     {
         $this->companies = $companies;
         $this->transformer = new CompanyTransformer();
-        $this->toHide = $toHide;
+        $this->query = $query;
     }
     /**
      * Execute the job.
@@ -29,7 +29,7 @@ class FormatCompaniesToJsonJob extends Job
     {
         $output = [];
         foreach( $this->companies as $company ) {
-            array_push( $output, $this->transformer->transform( $company, $this->toHide ) );
+            array_push( $output, $this->transformer->transform( $company, $this->query ) );
         }
 
         return $output;

@@ -4,9 +4,9 @@ namespace App\Domains\Http\Jobs;
 use Lucid\Foundation\Job;
 use App\Data\Transformers\RoleTransformer;
 
-class FormatRoleToJsonJob extends Job
+class FormatRolesToJsonJob extends Job
 {
-    private $role;
+    private $roles;
     private $transformer;
     private $query;
     /**
@@ -14,13 +14,12 @@ class FormatRoleToJsonJob extends Job
      *
      * @return void
      */
-    public function __construct( $role, $query = null )
+    public function __construct( $roles, $query = null )
     {
-        $this->role = $role;
+        $this->role = $roles;
         $this->transformer = new RoleTransformer();
         $this->query = $query;
     }
-
     /**
      * Execute the job.
      *
@@ -28,6 +27,11 @@ class FormatRoleToJsonJob extends Job
      */
     public function handle()
     {
-        return $this->transformer->transform( $this->role, $this->query  );
+        $output = [];
+        foreach( $this->role as $role ) {
+            array_push( $output, $this->transformer->transform( $role, $this->query ) );
+        }
+
+        return $output;
     }
 }
