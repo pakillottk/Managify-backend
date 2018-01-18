@@ -93,6 +93,27 @@ class ExtractQueryParametersJob extends Job
         return $output;
     }
 
+    private function extractOrder( $params ) {
+        $order = [
+            'orderBy' => 'updated_at',
+            'sorting' => 'desc'
+        ];
+        $matches = [];
+
+        if( isset( $params[ 'order' ] ) ) {
+            preg_match( '/[a-z A-Z 0-9_]+[|](desc|asc)/', $params[ 'order' ], $matches );
+            if( !empty( $matches ) ) {
+                $orderData = $matches[ 0 ];
+                $splittedData = explode( '|', $orderData );
+
+                $order[ 'orderBy' ] = $splittedData[ 0 ];
+                $order[ 'sorting' ] = $splittedData[ 1 ];
+            }
+        }
+
+        return $order;
+    }
+
     /**
      * Execute the job.
      *
@@ -106,8 +127,9 @@ class ExtractQueryParametersJob extends Job
         $select     = $this->extractSelect( $params );
         $hidden     = $this->extractHidden( $params );
         $fields     = $this->extractFields( $params );
-        $include    = $this->extractInclude( $params );    
+        $include    = $this->extractInclude( $params );
+        $order      = $this->extractOrder( $params );    
 
-        return new Query( $select, $hidden, $fields, $include, $page );
+        return new Query( $select, $hidden, $fields, $include, $page, $order[ 'orderBy' ], $order[ 'sorting' ] );
     }
 }

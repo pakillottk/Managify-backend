@@ -108,7 +108,7 @@ class Repository
      *
      * @return \Illuminate\Support\Collection
      */
-    public function getByAttributes(array $attributes, $operator = 'AND', $relations = null)
+    public function getByAttributes(array $attributes, $operator = 'AND', $relations = null, $order_by = 'updated_at', $sorting= 'desc')
     {
 
         // In the following it doesn't matter wivh element to start with, in all cases all attributes will be appended to the
@@ -142,7 +142,7 @@ class Repository
             }
         }
 
-        return $query->get();
+        return $query->orderBy($orderBy, $sorting)->get()();
     }
 
     /**
