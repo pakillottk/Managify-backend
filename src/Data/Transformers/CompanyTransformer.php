@@ -3,9 +3,19 @@
 namespace App\Data\Transformers;
 
 use App\Data\Transformers\BaseTransformer;
+use App\Data\Transformers\RoleTransformer;
 use App\Data\Queries\Query;
 
 class CompanyTransformer extends BaseTransformer {
+    protected function getRelationTransformer( $relation ) {
+        switch( $relation ) {
+            case 'roles': {
+                return new RoleTransformer();
+            }
+        }
+        return null;
+    }
+
     public function transform( $data, ?Query $query ) {
         $company = $data; 
         $output = [
@@ -19,7 +29,8 @@ class CompanyTransformer extends BaseTransformer {
             'created_at' => $company->created_at,
             'updated_at' => $company->updated_at
         ];
-        
+
+        $output = $this->includeRelations( $output, $data, $query );        
         return $this->hideFields( $output, $query );
     }
 }

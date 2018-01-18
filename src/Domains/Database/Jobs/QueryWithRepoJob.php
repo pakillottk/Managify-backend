@@ -29,10 +29,11 @@ class QueryWithRepoJob extends Job
             return $this->repo->all();
         }
 
+        $page = $this->query->getPage();
         $select = $this->query->getSelect();
         if( empty( $select ) ) {
-            return $this->repo->all();
-        } 
-        return $this->repo->getByAttributes( $select );
+            return $this->repo->page( 10, $page ,$this->query->getInclude() );
+        }
+        return $this->repo->getByAttributes( $select, 'AND', $this->query->getInclude() );
     }
 }

@@ -30,16 +30,12 @@ class ExtractQueryParametersJob extends Job
         return $this->request->query( $this->params );
     }
 
-    private function verifyQueryFormat( $params ) {
-        if ( 
-            isset( $params[ 'fields' ] ) || 
-            isset( $params[ 'select' ] ) || 
-            isset( $params[ 'hidden' ] ) 
-        ) {
-            return true;
+    private function extractPage( $params ) {
+        if( isset( $params[ 'page' ] ) ) {
+            return (int)$params[ 'page' ];
         }
 
-        return false || empty( $params );
+        return 0;
     }
 
     private function extractFields( $params ) {
@@ -84,6 +80,19 @@ class ExtractQueryParametersJob extends Job
         return $output;
     }
 
+    private function extractInclude( $params ) {
+        $output = [];
+        $matches = [];
+        if( isset( $params[ 'include' ] ) ) {
+            preg_match_all( '/[a-zA-Z0-9_]+/', $params[ 'include' ], $matches );
+            foreach( $matches[0] as $relation){
+                array_push( $output, $relation );
+            }
+        }        
+
+        return $output;
+    }
+
     /**
      * Execute the job.
      *
@@ -92,13 +101,13 @@ class ExtractQueryParametersJob extends Job
     public function handle()
     {
         $params = $this->getQueryParameters();
-        if( !$this->verifyQueryFormat( $params ) ) {
-            throw new Exception( 'Query format not valid' );
-        }
 
-        $select = $this->extractSelect( $params );
-        $hidden = $this->extractHidden( $params );
-        $fields = $this->extractFields( $params );
-        return new Query( $select, $hidden, $fields );
+        $page       = $this->extractPage( $params );
+        $select     = $this->extractSelect( $params );
+        $hidden     = $this->extractHidden( $params );
+        $fields     = $this->extractFields( $params );
+        $include    = $this->extractInclude( $params );    
+
+        return new Query( $select, $hidden, $fields, $include, $page );
     }
 }
