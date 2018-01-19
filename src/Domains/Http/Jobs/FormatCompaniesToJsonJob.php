@@ -26,12 +26,7 @@ class FormatCompaniesToJsonJob extends Job
      * @return void
      */
     public function handle()
-    {
-        $output = [];
-        foreach( $this->companies as $company ) {
-            array_push( $output, $this->transformer->transform( $company, $this->query ) );
-        }
-
-        return $output;
+    {        
+        return $this->transformer->transform( $this->companies, $this->query );
     }
 }

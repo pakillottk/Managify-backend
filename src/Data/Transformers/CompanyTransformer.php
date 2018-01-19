@@ -16,9 +16,8 @@ class CompanyTransformer extends BaseTransformer {
         return null;
     }
 
-    public function transform( $data, ?Query $query ) {
-        $company = $data; 
-        $output = [
+    public function _transform( $company, ?Query $query ) {
+        return $output = [
             'id' => (int) $company->id,
             'nif' => (string) $company->nif,
             'name' => (string) $company->name,
@@ -29,8 +28,5 @@ class CompanyTransformer extends BaseTransformer {
             'created_at' => $company->created_at,
             'updated_at' => $company->updated_at
         ];
-
-        $output = $this->includeRelations( $output, $data, $query );        
-        return $this->hideFields( $output, $query );
     }
 }

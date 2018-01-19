@@ -117,6 +117,37 @@ class ExtractQueryParametersJob extends Job
         return $order;
     }
 
+    private function extractAggregate( $params ) {
+        $output = [];
+        $matches = [];
+
+        if( isset( $params[ 'aggregate' ] ) ) {
+            preg_match_all( 
+                '/((max|min|avg|count){1}[(][a-z A-Z 0-9 _]*[)])/',
+                $params[ 'aggregate' ],
+                $matches
+            );
+
+            if( !empty( $matches )  ) {
+                $results = $matches[ 0 ];
+                foreach( $results as $toAggregate ) {
+                    $operation = [];
+                    preg_match( '/(max|min|avg|count){1}/', $toAggregate, $operation );
+                    $operation = $operation[ 0 ];
+
+                    $field = [];
+                    preg_match( '/[(][a-z A-Z 0-9 _]*[)]/', $toAggregate, $field );
+                    $field = $field[ 0 ];
+                    $field = str_replace( ['(', ')'], '', $field );
+                    
+                    $output[ $operation ] = $field;
+                }
+            }
+        }
+        
+        return $output;
+    }
+
     /**
      * Execute the job.
      *
@@ -132,7 +163,17 @@ class ExtractQueryParametersJob extends Job
         $fields     = $this->extractFields( $params );
         $include    = $this->extractInclude( $params );
         $order      = $this->extractOrder( $params );    
+        $aggregate  = $this->extractAggregate( $params );
 
-        return new Query( $select, $hidden, $fields, $include, $page, $order[ 'orderBy' ], $order[ 'sorting' ] );
+        return new Query( 
+            $select, 
+            $hidden, 
+            $fields, 
+            $include, 
+            $page, 
+            $order[ 'orderBy' ], 
+            $order[ 'sorting' ] ,
+            $aggregate
+        );
     }
 }

@@ -160,13 +160,29 @@ class Repository
             return $this->all();
         }
 
-        return $this->model
-                    ->where( $query->getSelect() )
-                    ->orderBy( $query->getOrderBy(), $query->getSorting() )
-                    ->with( $query->getInclude() )
-                    ->take( 10 )
-                    ->skip( $query->getPage() )
-                    ->get();
+        $output =   $this->model
+                    ->where( $query->getSelect() );
+        
+        $aggregationResults = [];
+        foreach( $query->getAggregate() as $operation => $field ) {
+            $result = null;
+            if( empty( $field ) ) {
+                $result = $output->$operation();
+            } else {
+                $result = $output->$operation($field);
+            }
+
+            $aggregationResults[ $operation.'('.$field.')' ] = $result;
+        }
+        if( !empty( $aggregationResults ) ) {
+            return $aggregationResults;
+        }
+                    
+        return $output  ->orderBy( $query->getOrderBy(), $query->getSorting() )
+                        ->with( $query->getInclude() )
+                        ->take( 10 )
+                        ->skip( $query->getPage() )
+                        ->get();                   
     }
 
     /**

@@ -16,7 +16,7 @@ class FormatRolesToJsonJob extends Job
      */
     public function __construct( $roles, $query = null )
     {
-        $this->role = $roles;
+        $this->roles = $roles;
         $this->transformer = new RoleTransformer();
         $this->query = $query;
     }
@@ -27,11 +27,6 @@ class FormatRolesToJsonJob extends Job
      */
     public function handle()
     {
-        $output = [];
-        foreach( $this->role as $role ) {
-            array_push( $output, $this->transformer->transform( $role, $this->query ) );
-        }
-
-        return $output;
+        return $this->transformer->transform( $this->roles, $this->query );
     }
 }

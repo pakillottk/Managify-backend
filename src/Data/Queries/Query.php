@@ -10,10 +10,12 @@ class Query {
     protected $page = 0;
     protected $orderBy = 'updated_at';
     protected $sorting = 'desc';
+    protected $aggregate = [];
 
     public function __construct( 
         $select = [], $hidden = [], $fields = [], $include = [], 
-        $page = 0, $orderBy = 'updated_at', $sorting = 'desc' 
+        $page = 0, $orderBy = 'updated_at', $sorting = 'desc',
+        $aggregate = [] 
     ) {
         $this->select = $select;
         $this->hidden = $hidden;
@@ -22,6 +24,7 @@ class Query {
         $this->page = $page;
         $this->orderBy = $orderBy;
         $this->sorting = $sorting;
+        $this->aggregate = $aggregate;
     }
 
     public function getFields() {
@@ -50,5 +53,9 @@ class Query {
 
     public function getSorting() {
         return $this->sorting;
+    }
+
+    public function getAggregate() {
+        return $this->aggregate;
     }
 }

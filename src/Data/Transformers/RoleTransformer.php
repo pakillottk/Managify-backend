@@ -17,17 +17,13 @@ class RoleTransformer extends BaseTransformer {
         return null;
     }
 
-    public function transform( $data, ?Query $query ) {
-        $role = $data;
-        $output = [
+    public function _transform( $role, ?Query $query ) {
+        return [
             'id' => (int) $role->id,
             'role_name' => (string) $role->role_name,
             'company_id' =>  $role->company_id !== null ? (int)$role->company_id : null, 
             'created_at' => $role->created_at,
             'updated_at' => $role->updated_at
         ];
-
-        $output = $this->includeRelations( $output, $data, $query );
-        return $this->hideFields( $output, $query );
     }
 }

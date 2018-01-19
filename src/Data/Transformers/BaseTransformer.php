@@ -5,9 +5,32 @@ namespace App\Data\Transformers;
 use App\Data\Queries\Query;
 
 abstract class BaseTransformer {
-    abstract public function transform( $data, ?Query $query );
+    abstract public function _transform( $data, ?Query $query );
 
     abstract protected function getRelationTransformer( $relation );
+
+    private function getItemTransformed( $data, $query ) {
+        $output = $this->_transform( $data, $query );
+        $output = $this->includeRelations( $output, $data, $query );        
+        return $this->hideFields( $output, $query );
+    }
+
+    public function transform( $data, ?Query $query ) {
+        if( !empty( $query->getAggregate() ) ) {
+            return $data;
+        }
+        
+        $output = [];
+        if( $data instanceof \Illuminate\Database\Eloquent\Collection ) {            
+            foreach( $data as $item ) {
+                array_push( $output, $this->getItemTransformed( $item, $query ) );
+            }
+
+            return $output;
+        }
+        
+        return $this->getItemTransformed( $data, $query );
+    }
 
     protected function includeRelations( $output, $data, ?Query $query ) {
         if( $query !== null ) {
