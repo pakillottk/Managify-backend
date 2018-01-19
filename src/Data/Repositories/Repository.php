@@ -163,18 +163,20 @@ class Repository
         $output =   $this->model
                     ->where( $query->getSelect() );
         
-        $aggregationResults = [];
-        foreach( $query->getAggregate() as $operation => $field ) {
-            $result = null;
-            if( empty( $field ) ) {
-                $result = $output->$operation();
-            } else {
-                $result = $output->$operation($field);
-            }
+        $aggregations = $query->getAggregate();
+        if( !empty( $aggregations ) ) {
+            $aggregationResults = [];
+            foreach( $aggregations as $operation => $field ) {
+                $result = null;
+                if( empty( $field ) ) {
+                    $result = $output->$operation();
+                } else {
+                    $result = $output->$operation($field);
+                }
 
-            $aggregationResults[ $operation.'('.$field.')' ] = $result;
-        }
-        if( !empty( $aggregationResults ) ) {
+                $aggregationResults[ $operation.'('.$field.')' ] = $result;
+            }
+       
             return $aggregationResults;
         }
                     

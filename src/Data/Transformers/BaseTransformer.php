@@ -5,7 +5,7 @@ namespace App\Data\Transformers;
 use App\Data\Queries\Query;
 
 abstract class BaseTransformer {
-    abstract public function _transform( $data, ?Query $query );
+    abstract protected function _transform( $data, ?Query $query );
 
     abstract protected function getRelationTransformer( $relation );
 
