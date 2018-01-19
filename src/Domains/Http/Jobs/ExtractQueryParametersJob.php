@@ -2,9 +2,7 @@
 namespace App\Domains\Http\Jobs;
 
 use Lucid\Foundation\Job;
-
 use App\Data\Queries\Query;
-use Exception;
 
 class ExtractQueryParametersJob extends Job
 {

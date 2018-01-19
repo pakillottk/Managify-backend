@@ -16,12 +16,17 @@ abstract class BaseTransformer {
     }
 
     public function transform( $data, ?Query $query ) {
-        if( !empty( $query->getAggregate() ) ) {
-            return $data;
+        if( $query !== null ) {
+            if( !empty( $query->getAggregate() ) ) {
+                return $data;
+            }
         }
         
         $output = [];
-        if( $data instanceof \Illuminate\Database\Eloquent\Collection ) {            
+        if ( 
+            $data instanceof \Illuminate\Database\Eloquent\Collection ||
+            is_array( $data )    
+        ) {            
             foreach( $data as $item ) {
                 array_push( $output, $this->getItemTransformed( $item, $query ) );
             }
@@ -39,16 +44,7 @@ abstract class BaseTransformer {
                 $transformer = $this->getRelationTransformer( $relation );
 
                 if( $transformer !== null ) {
-                    if( $relationData instanceof \Illuminate\Database\Eloquent\Collection ) {
-                        $items = [];
-                        foreach( $relationData as $item ) {
-                            array_push( $items, $transformer->transform( $item, null ) );
-                        }
-                        $output[ $relation ] = $items;
-                    } else {
-                        $relationData = $transformer->transform( $relationData, null );
-                        $output[ $relation ] = $relationData;
-                    }
+                    $output[ $relation ] = $transformer->transform( $relationData, null );
                 }
             }
         }
