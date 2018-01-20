@@ -146,15 +146,7 @@ class ExtractQueryParametersJob extends Job
         return $output;
     }
 
-    /**
-     * Execute the job.
-     *
-     * @return Query
-     */
-    public function handle()
-    {
-        $params = $this->getQueryParameters();
-
+    private function buildQuery( $params ) {
         $page       = $this->extractPage( $params );
         $select     = $this->extractSelect( $params );
         $hidden     = $this->extractHidden( $params );
@@ -173,5 +165,16 @@ class ExtractQueryParametersJob extends Job
             $order[ 'sorting' ] ,
             $aggregate
         );
+    }
+
+    /**
+     * Execute the job.
+     *
+     * @return Query
+     */
+    public function handle()
+    {
+        $params = $this->getQueryParameters();
+        return $this->buildQuery( $params );       
     }
 }

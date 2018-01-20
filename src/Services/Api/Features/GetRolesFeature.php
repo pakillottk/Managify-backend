@@ -10,7 +10,8 @@ use App\Domains\Http\Jobs\ExtractQueryParametersJob;
 //Database related
 use App\Domains\Database\Jobs\GetModelRepositoryJob;
 use App\Domains\Database\Jobs\CreateModelInstanceJob;
-use App\Domains\Database\Jobs\QueryWithRepoJob;
+use App\Domains\Database\Jobs\BuildEloquentQueryRunnerJob;
+use App\Domains\Database\Jobs\RunQueryRunnerJob;
 
 //Specific
 use App\Domains\Http\Jobs\FormatRolesToJsonJob;
@@ -32,12 +33,12 @@ class GetRolesFeature extends Feature
             $role = $this->run( CreateModelInstanceJob::class, [
                 'namespace' => '\Framework\Role'
             ]);
-            $repo = $this->run( GetModelRepositoryJob::class, [
+            $runner = $this->run( BuildEloquentQueryRunnerJob::class, [
+                'query' => $query,
                 'model' => $role
             ]);
-            $roles = $this->run( QueryWithRepoJob::class, [
-                'repo' => $repo,
-                'query'=> $query
+            $roles = $this->run( RunQueryRunnerJob::class, [
+                'runner' => $runner 
             ]);
             $roles = $this->run( FormatRolesToJsonJob::class, [
                 'roles' => $roles,

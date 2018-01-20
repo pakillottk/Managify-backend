@@ -10,7 +10,8 @@ use App\Domains\Http\Jobs\ExtractQueryParametersJob;
 //Database related
 use App\Domains\Database\Jobs\GetModelRepositoryJob;
 use App\Domains\Database\Jobs\CreateModelInstanceJob;
-use App\Domains\Database\Jobs\QueryWithRepoJob;
+use App\Domains\Database\Jobs\BuildEloquentQueryRunnerJob;
+use App\Domains\Database\Jobs\RunQueryRunnerJob;
 
 //Specific
 use App\Domains\Http\Jobs\FormatCompaniesToJsonJob;
@@ -32,12 +33,12 @@ class GetCompaniesFeature extends Feature
             $company = $this->run( CreateModelInstanceJob::class, [
                 'namespace' => '\Framework\Company'
             ]);
-            $repo = $this->run( GetModelRepositoryJob::class, [
+            $runner = $this->run( BuildEloquentQueryRunnerJob::class, [
+                'query' => $query,
                 'model' => $company
             ]);
-            $companies = $this->run( QueryWithRepoJob::class, [
-                'repo' => $repo,
-                'query'=> $query
+            $companies = $this->run( RunQueryRunnerJob::class, [
+                'runner' => $runner 
             ]);
             $companies = $this->run( FormatCompaniesToJsonJob::class, [
                 'companies' => $companies,

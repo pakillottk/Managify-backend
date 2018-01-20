@@ -146,47 +146,7 @@ class Repository
 
         return $query->orderBy($orderBy, $sorting)->get()();
     }
-
-    /** 
-    * Returns a query result using the custom Query object
-    * as the select parameters.
-    *
-    * @param Query $query
-    *
-    * @return \Illuminate\Database\Eloquent\Model
-    */
-    public function getByQuery( ?Query $query ) {
-        if( $query === null ) {
-            return $this->all();
-        }
-
-        $output =   $this->model
-                    ->where( $query->getSelect() );
-        
-        $aggregations = $query->getAggregate();
-        if( !empty( $aggregations ) ) {
-            $aggregationResults = [];
-            foreach( $aggregations as $operation => $field ) {
-                $result = null;
-                if( empty( $field ) ) {
-                    $result = $output->$operation();
-                } else {
-                    $result = $output->$operation($field);
-                }
-
-                $aggregationResults[ $operation.'('.$field.')' ] = $result;
-            }
-       
-            return $aggregationResults;
-        }
-                    
-        return $output  ->orderBy( $query->getOrderBy(), $query->getSorting() )
-                        ->with( $query->getInclude() )
-                        ->take( 10 )
-                        ->skip( $query->getPage() )
-                        ->get();                   
-    }
-
+    
     /**
      * Fills out an instance of the model
      * with $attributes.
