@@ -8,14 +8,12 @@ class Query {
     protected $fields = [];
     protected $include = [];
     protected $page = 0;
-    protected $orderBy = 'updated_at';
-    protected $sorting = 'desc';
+    protected $orderBy;
     protected $aggregate = [];
 
     public function __construct( 
         $select = [], $hidden = [], $fields = [], $include = [], 
-        $page = 0, $orderBy = 'updated_at', $sorting = 'desc',
-        $aggregate = [] 
+        $page = 0, $orderBy = [ 'field' => 'updated_at', 'sorting' => 'desc' ], $aggregate = [] 
     ) {
         $this->select = $select;
         $this->hidden = $hidden;
@@ -23,7 +21,6 @@ class Query {
         $this->include = $include;
         $this->page = $page;
         $this->orderBy = $orderBy;
-        $this->sorting = $sorting;
         $this->aggregate = $aggregate;
     }
 

@@ -54,14 +54,20 @@ class ExtractQueryParametersJob extends Job
         $output = [];
         $matches = [];
         if( isset( $params[ 'select' ] ) ) {
-            preg_match_all( '/[a-z A-Z 0-9 _]+[=]{1}[\s a-z A-Z 0-9]+/', $params[ 'select' ], $matches );
-          
-            foreach( $matches[0] as $clause){
-                $splittedByEquals = explode( '=', $clause ); 
-                if( $splittedByEquals[ 1 ] === 'null' ) {
-                    $splittedByEquals[ 1 ] = null;
+            preg_match_all( '/[a-z A-Z 0-9 _]+(>=|<=|=|<>|<|>){1}[\s a-z A-Z 0-9]+/', $params[ 'select' ], $matches );
+            for( $i = 0; $i < count( $matches[0] ); $i++ ){
+                $clause = $matches[ 0 ][ $i ];
+                $operator = $matches[ 1 ][ $i ];
+                $splitted = explode( $operator, $clause ); 
+                if( $splitted[ 1 ] === 'null' ) {
+                    $splitted[ 1 ] = null;
                 }
-                $output[ $splittedByEquals[ 0 ] ] = $splittedByEquals[ 1 ];
+                
+                array_push( $output, [
+                    'field' => $splitted[ 0 ],
+                    'operator' => $operator,
+                    'value' => $splitted[ 1 ]
+                ]);
             }
         }
 
@@ -95,20 +101,21 @@ class ExtractQueryParametersJob extends Job
     }
 
     private function extractOrder( $params ) {
-        $order = [
-            'orderBy' => 'updated_at',
-            'sorting' => 'desc'
-        ];
+        $order = [];
         $matches = [];
 
         if( isset( $params[ 'order' ] ) ) {
-            preg_match( '/[a-z A-Z 0-9_]+[|](desc|asc)/', $params[ 'order' ], $matches );
-            if( !empty( $matches ) ) {
+            preg_match_all( '/[a-z A-Z 0-9_]+[|](desc|asc)/', $params[ 'order' ], $matches );
+            if( !empty( $matches[ 0 ] ) ) {
                 $orderData = $matches[ 0 ];
-                $splittedData = explode( '|', $orderData );
+                foreach( $matches[0] as $orderData ) {
+                    $splittedData = explode( '|', $orderData );
 
-                $order[ 'orderBy' ] = $splittedData[ 0 ];
-                $order[ 'sorting' ] = $splittedData[ 1 ];
+                    array_push( $order, [
+                        'field' => $splittedData[ 0 ],
+                        'sorting' => $splittedData[ 1 ]
+                    ]);
+                }
             }
         }
 
@@ -161,8 +168,7 @@ class ExtractQueryParametersJob extends Job
             $fields, 
             $include, 
             $page, 
-            $order[ 'orderBy' ], 
-            $order[ 'sorting' ] ,
+            $order, 
             $aggregate
         );
     }

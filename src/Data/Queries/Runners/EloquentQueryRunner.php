@@ -14,31 +14,58 @@ class EloquentQueryRunner extends QueryRunner {
         $this->model = $model;
     }
 
-    public function run() {
-        $query = $this->query;
-        
-        $output =   $this->model
-                    ->where( $query->getSelect() );
-        
-        $aggregations = $query->getAggregate();
-        if( !empty( $aggregations ) ) {
-            $aggregationResults = [];
-            foreach( $aggregations as $operation => $field ) {
-                $result = null;
-                if( empty( $field ) ) {
-                    $result = $output->$operation();
-                } else {
-                    $result = $output->$operation($field);
-                }
-
-                $aggregationResults[ $operation.'('.$field.')' ] = $result;
+    protected function runSelect( $output, $select ) {
+        if( !empty( $select ) ) {
+            foreach( $select as $whereClause ) {
+                $output = $output->where( 
+                            $whereClause[ 'field' ], 
+                            $whereClause[ 'operator' ], 
+                            $whereClause[ 'value' ] 
+                        );
             }
-       
+        }
+
+        return $output;
+    }
+
+    protected function runAggregations( $output, $aggregations ) {
+        $aggregationResults = [];
+        foreach( $aggregations as $operation => $field ) {
+            $result = null;
+            if( empty( $field ) ) {
+                $result = $output->$operation();
+            } else {
+                $result = $output->$operation($field);
+            }
+
+            $aggregationResults[ $operation.'('.$field.')' ] = $result;
+        }
+    
+        return $aggregationResults;        
+    }
+
+    protected function runOrderBy( $output, $query ) {
+        if( !empty( $orderBy ) ) {
+            foreach( $orderBy as $orderData ) {
+                $output = $output->orderBy( $orderData[ 'field' ], $orderData[ 'sorting' ] );
+            }
+        }
+
+        return $output;
+    }
+
+    public function run() {
+        $query  = $this->query;
+        $output = $this->model;
+
+        $output             = $this->runSelect( $output, $query->getSelect() );
+        $aggregationResults = $this->runAggregations( $output, $query->getAggregate() );
+        if( !empty( $aggregationResults ) ) {
             return $aggregationResults;
         }
-                    
-        return $output  ->orderBy( $query->getOrderBy(), $query->getSorting() )
-                        ->with( $query->getInclude() )
+        $output             = $this->runOrderBy( $output, $query->getOrderBy() );
+                           
+        return $output  ->with( $query->getInclude() )
                         ->take( 10 )
                         ->skip( $query->getPage() )
                         ->get();  
