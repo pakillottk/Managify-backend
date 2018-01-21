@@ -44,7 +44,7 @@ class EloquentQueryRunner extends QueryRunner {
         return $aggregationResults;        
     }
 
-    protected function runOrderBy( $output, $query ) {
+    protected function runOrderBy( $output, $orderBy ) {
         if( !empty( $orderBy ) ) {
             foreach( $orderBy as $orderData ) {
                 $output = $output->orderBy( $orderData[ 'field' ], $orderData[ 'sorting' ] );
@@ -54,20 +54,44 @@ class EloquentQueryRunner extends QueryRunner {
         return $output;
     }
 
-    public function run() {
-        $query  = $this->query;
-        $output = $this->model;
+    protected function runInclude( $output, $include ) {
+         foreach( $include as $relationData ) {
+             $output = $output->with([ $relationData[ 'relation' ] => function( $query ) use ( $relationData ) {
+                $query = $this->buildDBQuery( $relationData[ 'query' ], $query, false );
+             }]);
+         }
 
+         return $output;
+    }
+
+    protected function runPagination( $output, $page, $limit = 10 ) {
+        $output = $output->take( $limit )->skip( $page );
+        return $output; 
+    }
+
+    protected function buildDBQuery( $query, $output, $paginate = true ) {
         $output             = $this->runSelect( $output, $query->getSelect() );
         $aggregationResults = $this->runAggregations( $output, $query->getAggregate() );
         if( !empty( $aggregationResults ) ) {
             return $aggregationResults;
         }
         $output             = $this->runOrderBy( $output, $query->getOrderBy() );
-                           
-        return $output  ->with( $query->getInclude() )
-                        ->take( 10 )
-                        ->skip( $query->getPage() )
-                        ->get();  
+        $output             = $this->runInclude( $output, $query->getInclude() );        
+        if( $paginate ) {
+            $output = $this->runPagination( $output, $query->getPage() );
+        }
+
+        return $output; 
+    }
+
+    public function run() {
+        $query  = $this->query;
+        $output = $this->model;
+
+        $dbQuery = $this->buildDBQuery( $query, $output );
+        if( is_array( $dbQuery ) ) {
+            return $dbQuery;
+        }
+        return $dbQuery->get();
     }
 }

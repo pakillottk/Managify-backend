@@ -40,11 +40,11 @@ abstract class BaseTransformer {
     protected function includeRelations( $output, $data, ?Query $query ) {
         if( $query !== null ) {
             foreach( $query->getInclude() as $relation ) {
-                $relationData = $data[ $relation ];
-                $transformer = $this->getRelationTransformer( $relation );
+                $relationData = $data[ $relation[ 'relation' ] ];
+                $transformer = $this->getRelationTransformer( $relation[ 'relation' ] );
 
                 if( $transformer !== null ) {
-                    $output[ $relation ] = $transformer->transform( $relationData, null );
+                    $output[ $relation[ 'relation' ] ] = $transformer->transform( $relationData, $relation[ 'query' ] );
                 }
             }
         }

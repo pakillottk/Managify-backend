@@ -36,20 +36,6 @@ class ExtractQueryParametersJob extends Job
         return 0;
     }
 
-    private function extractFields( $params ) {
-        $output = [];
-        $matches = [];
-        if( isset( $params[ 'fields' ] ) ) {
-            preg_match_all( '/[a-zA-Z0-9_]+/', $params[ 'fields' ], $matches );
-            foreach( $matches[0] as $field){
-                $output[ $field ] = '';
-            }
-        }        
-
-        return $output;
-    }
-
-    
     private function extractSelect( $params ) {
         $output = [];
         $matches = [];
@@ -74,6 +60,19 @@ class ExtractQueryParametersJob extends Job
         return $output;
     }
 
+    private function extractFields( $params ) {
+        $output = [];
+        $matches = [];
+        if( isset( $params[ 'fields' ] ) ) {
+            preg_match_all( '/[a-zA-Z0-9_]+/', $params[ 'fields' ], $matches );
+            foreach( $matches[0] as $field){
+                $output[ $field ] = '';
+            }
+        }        
+
+        return $output;
+    }  
+
     private function extractHidden( $params ) {
         $output = [];
         $matches = [];
@@ -85,19 +84,40 @@ class ExtractQueryParametersJob extends Job
         }        
 
         return $output;
-    }
+    }    
 
     private function extractInclude( $params ) {
         $output = [];
         $matches = [];
         if( isset( $params[ 'include' ] ) ) {
-            preg_match_all( '/[a-zA-Z0-9_]+/', $params[ 'include' ], $matches );
-            foreach( $matches[0] as $relation){
-                array_push( $output, $relation );
+            preg_match_all( '/([a-zA-Z0-9_]+)({([a-z A-Z 0-9 _-]+[=]["][a-z A-Z 0-9 -_|]*["][;]?)*})?/', $params[ 'include' ], $matches );
+            
+            for( $i = 0; $i < count( $matches[0] ); $i++ ){
+                $relation       = $matches[ 1 ][ $i ];
+                $subqueryParams = $this->formatSubquery($matches[ 3 ][ $i ]);
+                $subquery       = $this->buildQuery( $subqueryParams );
+                
+                array_push( $output, [
+                    'relation' => $relation, 
+                    'query' =>  $subquery 
+                ]);
             }
         }        
 
         return $output;
+    }
+
+    private function formatSubquery( $packagedParams ) {
+        $params = [];
+        if( !empty( $packagedParams ) ) {
+            $splitted = explode( ';', $packagedParams );
+            foreach( $splitted as $queryParamOneLined ) {
+                $queryParam = explode( '=', $queryParamOneLined, 2 );
+                $params[ $queryParam[ 0 ] ] = $queryParam[ 1 ]; 
+            }
+        }
+        
+        return $params;
     }
 
     private function extractOrder( $params ) {
@@ -156,8 +176,8 @@ class ExtractQueryParametersJob extends Job
     private function buildQuery( $params ) {
         $page       = $this->extractPage( $params );
         $select     = $this->extractSelect( $params );
-        $hidden     = $this->extractHidden( $params );
         $fields     = $this->extractFields( $params );
+        $hidden     = $this->extractHidden( $params );
         $include    = $this->extractInclude( $params );
         $order      = $this->extractOrder( $params );    
         $aggregate  = $this->extractAggregate( $params );
