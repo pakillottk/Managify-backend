@@ -7,8 +7,9 @@
     "require": {
         "php": ">=7.0.0",
         "laravel/framework": "5.5.*",
-        "lucid-arch/laravel-foundation": "5.5.*",
-        "laravel/tinker": "~1.0"
+        "laravel/passport": "^4.0",
+        "laravel/tinker": "~1.0",
+        "lucid-arch/laravel-foundation": "5.5.*"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

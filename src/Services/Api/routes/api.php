@@ -21,6 +21,8 @@ Route::group(['prefix' => ''], function() {
         return response()->json(['path' => '/api/api']);
     });
     
+    Route::post( '/login', 'LoginController@login' );
+
     Route::get('/companies', 'CompanyController@index' );
     Route::post('/companies', 'CompanyController@store' ); 
     Route::put('/companies/{id}', 'CompanyController@update' );   
