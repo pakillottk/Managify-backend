@@ -1,6 +1,9 @@
 <?php
 namespace App\Services\Api\Features;
 
+use Lucid\Foundation\Feature;
+use Illuminate\Http\Request;
+
 //Database related
 use App\Domains\Database\Jobs\GetModelRepositoryJob;
 use App\Domains\Database\Jobs\RemoveFromRepoJob;
@@ -9,12 +12,9 @@ use App\Domains\Database\Jobs\RemoveFromRepoJob;
 use App\Domains\Http\Jobs\RespondWithJsonJob;
 use App\Domains\Http\Jobs\RespondWithJsonErrorJob;
 
-use Lucid\Foundation\Feature;
-use Illuminate\Http\Request;
-
 use Exception;
 
-class DeleteCompanyFeature extends Feature
+class DeletePermissionFeature extends Feature
 {
     private $id;
 
@@ -22,11 +22,11 @@ class DeleteCompanyFeature extends Feature
         $this->id = (int) $id;
     }  
 
-    public function handle()
+    public function handle(Request $request)
     {
         try {
             $repo = $this->run( GetModelRepositoryJob::class, [
-                'model' => new \Framework\Company()
+                'model' => new \Framework\Permission()
             ]);
                         
             $success = $this->run( RemoveFromRepoJob::class, [

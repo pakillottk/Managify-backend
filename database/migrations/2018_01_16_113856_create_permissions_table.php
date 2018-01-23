@@ -16,13 +16,13 @@ class CreatePermissionsTable extends Migration
         Schema::create('permissions', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->string( 'permisssion' );
+            $table->string( 'permission' );
             $table->boolean( 'read' )->default( true );
             $table->boolean( 'write' )->default( false );
             $table->boolean( 'delete' )->default( false );
-            $table->integer( 'rol_id' )->unsigned();
+            $table->integer( 'role_id' )->unsigned();
             
-            $table  ->foreign( 'rol_id' )
+            $table  ->foreign( 'role_id' )
                     ->references( 'id' )
                     ->on( 'roles' )
                     ->onDelete( 'cascade' );

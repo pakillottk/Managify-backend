@@ -144,7 +144,7 @@ class Repository
             }
         }
 
-        return $query->orderBy($orderBy, $sorting)->get()();
+        return $query->orderBy($order_by, $sorting)->get();
     }
     
     /**

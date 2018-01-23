@@ -26,6 +26,11 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
+        Passport::tokensCan([
+            'companies-read-allowed' => 'Read the companies',
+            'companies-write-allowed' => 'Modify the companies',
+            'companies-delete-allowed' => 'Delete companies'
+        ]);
         Passport::routes();
     }
 }

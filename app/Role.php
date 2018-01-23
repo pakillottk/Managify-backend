@@ -15,4 +15,8 @@ class Role extends Model
     public function company() {
         return $this->belongsTo( 'Framework\Company', 'company_id' );
     }
+
+    public function permissions() {
+        return $this->hasMany( 'Framework\Permission', 'role_id' );
+    }
 }

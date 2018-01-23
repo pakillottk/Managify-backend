@@ -13,19 +13,19 @@
 
 Route::post( '/login', 'LoginController@login' );
 
+Route::get( '/companies', 'CompanyController@index' )
+->middleware( ['auth:api', 'allScopes:companies-read-allowed' ]);
+
+Route::put('/companies/{id}', 'CompanyController@update' )
+->middleware( ['auth:api', 'allScopes:companies-write-allowed' ]);
+
+Route::post('/companies', 'CompanyController@store' )
+->middleware( ['auth:api', 'allScopes:companies-write-allowed' ]);
+
+Route::delete( '/companies/{id}', 'CompanyController@destroy' )
+->middleware( ['auth:api', 'allScopes:companies-delete-allowed' ]);
+
 Route::group([ 'middleware' => ['auth:api'] ], function() {
-
-    // The controllers live in src/Services/Api/Http/Controllers
-    // Route::get('/', 'UserController@index');
-
-    /*Route::get('/', function() {
-        return response()->json(['path' => '/api/api']);
-    });*/
-    Route::get('/companies', 'CompanyController@index' );
-    Route::post('/companies', 'CompanyController@store' ); 
-    Route::put('/companies/{id}', 'CompanyController@update' );   
-    Route::delete( '/companies/{id}', 'CompanyController@destroy' );
-
     Route::get('/roles', 'RoleController@index' );
     Route::post('/roles', 'RoleController@store' ); 
     Route::put('/roles/{id}', 'RoleController@update' );   
@@ -36,9 +36,8 @@ Route::group([ 'middleware' => ['auth:api'] ], function() {
     Route::put('/users/{id}', 'UserController@update' );   
     Route::delete( '/users/{id}', 'UserController@destroy' );
 
-    /*
-    Route::middleware('auth:api')->get('/user', function (Request $request) {
-        return $request->user();
-    });
-    */
+    Route::get('/permissions', 'PermissionController@index' );
+    Route::post('/permissions', 'PermissionController@store' ); 
+    Route::put('/permissions/{id}', 'PermissionController@update' );   
+    Route::delete( '/permissions/{id}', 'PermissionController@destroy' );
 });

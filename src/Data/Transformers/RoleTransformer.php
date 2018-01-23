@@ -5,6 +5,7 @@ namespace App\Data\Transformers;
 use App\Data\Transformers\BaseTransformer;
 use App\Data\Transformers\CompanyTransformer;
 use App\Data\Transformers\UserTransformer;
+use App\Data\Transformers\PermissionTransformer;
 
 class RoleTransformer extends BaseTransformer {
     protected function getRelationTransformer( $relation ) {
@@ -14,6 +15,9 @@ class RoleTransformer extends BaseTransformer {
             }
             case "users": {
                 return new UserTransformer();
+            }
+            case "permissions": {
+                return new PermissionTransformer();
             }
         }
 
