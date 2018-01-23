@@ -11,18 +11,16 @@
 |
 */
 
-// Prefix: /api/api
-Route::group(['prefix' => ''], function() {
+Route::post( '/login', 'LoginController@login' );
+
+Route::group([ 'middleware' => ['auth:api'] ], function() {
 
     // The controllers live in src/Services/Api/Http/Controllers
     // Route::get('/', 'UserController@index');
 
-    Route::get('/', function() {
+    /*Route::get('/', function() {
         return response()->json(['path' => '/api/api']);
-    });
-    
-    Route::post( '/login', 'LoginController@login' );
-
+    });*/
     Route::get('/companies', 'CompanyController@index' );
     Route::post('/companies', 'CompanyController@store' ); 
     Route::put('/companies/{id}', 'CompanyController@update' );   
@@ -32,9 +30,9 @@ Route::group(['prefix' => ''], function() {
     Route::post('/roles', 'RoleController@store' ); 
     Route::put('/roles/{id}', 'RoleController@update' );   
     Route::delete( '/roles/{id}', 'RoleController@destroy' );
-
+    /*
     Route::middleware('auth:api')->get('/user', function (Request $request) {
         return $request->user();
     });
-
+    */
 });
