@@ -4,9 +4,12 @@ namespace App\Domains\User\Jobs;
 use Lucid\Foundation\Job;
 use Exception;
 
+use App\Data\Validators\EmailValidator;
+
 class ValidateInputForCompanyJob extends Job
 {
     private $input = [];
+    private $mailValidator;
     /**
      * Create a new job instance.
      *
@@ -15,6 +18,7 @@ class ValidateInputForCompanyJob extends Job
     public function __construct( $input )
     {
         $this->input = $input;
+        $this->mailValidator = new EmailValidator();
     }
 
     /**
@@ -37,10 +41,7 @@ class ValidateInputForCompanyJob extends Job
         }
         //EMAIL (exception if field not in input)
         $email = trim( $input[ 'email' ] );
-        if( empty( $email ) ) {
-            throw new Exception( 'EMAIL is required' );
-        }
-        if( !filter_var( $email, FILTER_VALIDATE_EMAIL ) ) {
+        if( !$this->mailValidator->validate( $email ) ) {
             throw new Exception( 'EMAIL is not valid' );
         }
         //PHONE

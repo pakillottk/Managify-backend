@@ -11,4 +11,8 @@ class Company extends Model
     public function roles() {
         return $this->hasMany( 'Framework\Role', 'company_id' );
     }
+
+    public function users() {
+        return $this->hasMany( 'Framework\User', 'company_id' );
+    }
 }

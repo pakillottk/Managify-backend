@@ -5,7 +5,7 @@ namespace App\Data\Transformers;
 use App\Data\Queries\Query;
 
 abstract class BaseTransformer {
-    abstract protected function _transform( $data, ?Query $query );
+    abstract protected function _transform( $data );
 
     abstract protected function getRelationTransformer( $relation );
 
@@ -41,6 +41,9 @@ abstract class BaseTransformer {
         if( $query !== null ) {
             foreach( $query->getInclude() as $relation ) {
                 $relationData = $data[ $relation[ 'relation' ] ];
+                if( is_null( $relationData ) ) {
+                    continue;
+                }
                 $transformer = $this->getRelationTransformer( $relation[ 'relation' ] );
 
                 if( $transformer !== null ) {

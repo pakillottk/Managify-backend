@@ -2,7 +2,6 @@
 
 namespace App\Data\Services;
 
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Data\Repositories\Repository;
@@ -10,12 +9,10 @@ use Exception;
 
 class LoginProxy {
     const REFRESH_TOKEN = 'refreshToken';
-
-    private $http;
+    
     private $userRepo;
 
     public function __construct() {
-        $this->http = new Client();
         $this->userRepo = new Repository( new \Framework\User() );
     }
 

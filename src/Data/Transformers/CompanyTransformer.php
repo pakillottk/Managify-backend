@@ -4,7 +4,7 @@ namespace App\Data\Transformers;
 
 use App\Data\Transformers\BaseTransformer;
 use App\Data\Transformers\RoleTransformer;
-use App\Data\Queries\Query;
+use App\Data\Transformers\UserTransformer;
 
 class CompanyTransformer extends BaseTransformer {
     protected function getRelationTransformer( $relation ) {
@@ -12,11 +12,14 @@ class CompanyTransformer extends BaseTransformer {
             case 'roles': {
                 return new RoleTransformer();
             }
+            case 'users': {
+                return new UserTransformer();
+            }
         }
         return null;
     }
 
-    public function _transform( $company, ?Query $query ) {
+    public function _transform( $company ) {
         return $output = [
             'id' => (int) $company->id,
             'nif' => (string) $company->nif,
