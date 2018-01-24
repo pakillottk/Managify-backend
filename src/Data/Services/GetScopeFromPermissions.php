@@ -6,9 +6,11 @@ use App\Data\Repositories\Repository;
 
 class GetScopeFromPermissions {
     private $repo;
-    
+    private $rolesRepo;
+
     public function __construct() {
-        $this->repo = new Repository( new \Framework\Permission() );
+        $this->repo      = new Repository( new \Framework\Permission() );
+        $this->rolesRepo = new Repository( new \Framework\Role() );
     }
 
     protected function permissionToScopes( $permission, $asArray = true ) {
@@ -44,6 +46,10 @@ class GetScopeFromPermissions {
         if( is_null( $role_id ) ) {
             return $this->repo->all();
         }
+        $role = $this->rolesRepo->find( $role_id );
+        if( $role->role_name === "superuser" ) {
+            return '*';
+        }
         return $this->repo->getByAttributes( [ 'role_id' => $role_id ] );
     }
 
@@ -62,6 +68,9 @@ class GetScopeFromPermissions {
         }
 
         $permissions = $this->getPermissions( $user->role_id );
+        if( $permissions === '*' ) {
+            return $permissions;   
+        }
         $scopes = $this->permissionsToScopes( $permissions );    
 
         if(!$inString ) {

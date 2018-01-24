@@ -11,7 +11,14 @@
 |
 */
 
+//CREDENTIALS RELATED
 Route::post( '/login', 'LoginController@login' );
+
+Route::post( '/refresh', 'LoginController@refresh' )
+->middleware([ 'auth:api' ]);
+
+Route::post( '/logout', 'LoginController@logout' )
+->middleware([ 'auth:api' ]);
 
 //COMPANIES
 Route::get( '/companies', 'CompanyController@index' )

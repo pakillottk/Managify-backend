@@ -3,15 +3,16 @@
 namespace App\Data\Services;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
 use App\Data\Repositories\Repository;
 use App\Data\Services\GetScopeFromPermissions;
+use Illuminate\Support\Facades\DB;
 
 use Exception;
 
 class LoginProxy {
-    const REFRESH_TOKEN = 'refreshToken';
-    
     private $userRepo;
     private $scopeGetter;
 
@@ -33,14 +34,20 @@ class LoginProxy {
         }
     }
 
-    public function proxy( $grantType, array $data = [], $user = null ) {
-        $scope = $this->scopeGetter->getScope( $user, true, ' ' );
+    public function attemptRefresh( $refreshToken ) {
+        return $this->proxy( 'refresh_token', [ 'refresh_token' => $refreshToken ] );
+    }
+
+    public function proxy( $grantType, array $data = [], $user = null ) {        
         $oauthConfig = [
             'grant_type'    => $grantType,
             'client_id'     => (int)env( 'PASSWORD_CLIENT_ID' ),
-            'client_secret' => env( 'PASSWORD_CLIENT_SECRET' ),
-            'scope'         => $scope
+            'client_secret' => env( 'PASSWORD_CLIENT_SECRET' )
         ];
+        if( !is_null( $user ) ) {
+            $scope = $this->scopeGetter->getScope( $user, true, ' ' );
+            $oauthConfig[ 'scope' ] = $scope;
+        }
         $data = array_merge( $oauthConfig, $data );
         
         request()->merge( $data );
@@ -60,5 +67,18 @@ class LoginProxy {
             'expires_in' => $responseData->expires_in,
             'refresh_token' => $responseData->refresh_token
         ];
+    }
+
+    public function logout() {
+        $accessToken = Auth::user()->token();
+        $refreshToken = DB::table( 'oauth_refresh_tokens' )
+                        ->where( 'access_token_id', $accessToken->id )
+                        ->update([
+                            'revoked' => true
+                        ]);
+
+        $accessToken->revoke();
+
+        return 'Logout successfull';
     }
 }
