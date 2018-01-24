@@ -6,6 +6,8 @@ use Laravel\Passport\Passport;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
+use App\Data\Services\GetScopeFromPermissions;
+
 class AuthServiceProvider extends ServiceProvider
 {
     /**
@@ -25,12 +27,10 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-
-        Passport::tokensCan([
-            'companies-read-allowed' => 'Read the companies',
-            'companies-write-allowed' => 'Modify the companies',
-            'companies-delete-allowed' => 'Delete companies'
-        ]);
+        
+        $scopeGetter = new GetScopeFromPermissions();
+        $allScopes   = $scopeGetter->getAllScopes( false ); 
+        Passport::tokensCan( $allScopes );
         Passport::routes();
     }
 }

@@ -34,8 +34,7 @@ class LoginProxy {
     }
 
     public function proxy( $grantType, array $data = [], $user = null ) {
-        $scope = $this->scopeGetter->getScope( $user );
-        
+        $scope = $this->scopeGetter->getScope( $user, true, ' ' );
         $oauthConfig = [
             'grant_type'    => $grantType,
             'client_id'     => (int)env( 'PASSWORD_CLIENT_ID' ),

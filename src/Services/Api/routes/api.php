@@ -13,6 +13,7 @@
 
 Route::post( '/login', 'LoginController@login' );
 
+//COMPANIES
 Route::get( '/companies', 'CompanyController@index' )
 ->middleware( ['auth:api', 'allScopes:companies-read-allowed' ]);
 
@@ -25,19 +26,41 @@ Route::post('/companies', 'CompanyController@store' )
 Route::delete( '/companies/{id}', 'CompanyController@destroy' )
 ->middleware( ['auth:api', 'allScopes:companies-delete-allowed' ]);
 
-Route::group([ 'middleware' => ['auth:api'] ], function() {
-    Route::get('/roles', 'RoleController@index' );
-    Route::post('/roles', 'RoleController@store' ); 
-    Route::put('/roles/{id}', 'RoleController@update' );   
-    Route::delete( '/roles/{id}', 'RoleController@destroy' );
+//ROLES
+Route::get('/roles', 'RoleController@index' )
+->middleware( ['auth:api', 'allScopes:roles-read-allowed' ]);
 
-    Route::get('/users', 'UserController@index' );
-    Route::post('/users', 'UserController@store' ); 
-    Route::put('/users/{id}', 'UserController@update' );   
-    Route::delete( '/users/{id}', 'UserController@destroy' );
+Route::post('/roles', 'RoleController@store' )
+->middleware( ['auth:api', 'allScopes:roles-write-allowed' ]);
 
-    Route::get('/permissions', 'PermissionController@index' );
-    Route::post('/permissions', 'PermissionController@store' ); 
-    Route::put('/permissions/{id}', 'PermissionController@update' );   
-    Route::delete( '/permissions/{id}', 'PermissionController@destroy' );
-});
+Route::put('/roles/{id}', 'RoleController@update' )
+->middleware( ['auth:api', 'allScopes:roles-write-allowed' ]);
+
+Route::delete( '/roles/{id}', 'RoleController@destroy' )
+->middleware( ['auth:api', 'allScopes:roles-delete-allowed' ]);
+
+//USERS
+Route::get('/users', 'UserController@index' )
+->middleware( ['auth:api', 'allScopes:users-read-allowed' ]);
+
+Route::post('/users', 'UserController@store' )
+->middleware( ['auth:api', 'allScopes:users-write-allowed' ]);
+
+Route::put('/users/{id}', 'UserController@update' )
+->middleware( ['auth:api', 'allScopes:users-write-allowed' ]);
+
+Route::delete( '/users/{id}', 'UserController@destroy' )
+->middleware( ['auth:api', 'allScopes:users-delete-allowed' ]);
+
+//PERMISSIONS
+Route::get('/permissions', 'PermissionController@index' )
+->middleware( ['auth:api', 'allScopes:permissions-read-allowed' ]);
+
+Route::post('/permissions', 'PermissionController@store' )
+->middleware( ['auth:api', 'allScopes:permissions-write-allowed' ]);
+
+Route::put('/permissions/{id}', 'PermissionController@update' )
+->middleware( ['auth:api', 'allScopes:permissions-write-allowed' ]);
+
+Route::delete( '/permissions/{id}', 'PermissionController@destroy' )
+->middleware( ['auth:api', 'allScopes:permissions-delete-allowed' ]);

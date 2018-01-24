@@ -11,37 +11,74 @@ class GetScopeFromPermissions {
         $this->repo = new Repository( new \Framework\Permission() );
     }
 
-    protected function permissionToScopes( $permission ) {
-        $scope = '';
+    protected function permissionToScopes( $permission, $asArray = true ) {
+        $scopes = [];
         $name = $permission->permission;
-        if( $permission->read ) {
-            $scope = $scope.$name.'-read-allowed ';
-        }
-        if( $permission->write ) {
-            $scope = $scope.$name.'-write-allowed ';
-        }
-        if( $permission->delete ) {
-            $scope = $scope.$name.'-delete-allowed ';
+        if( $asArray ) {
+            if( $permission->read ) {
+                array_push( $scopes, $name.'-read-allowed' );
+            }
+            if( $permission->write ) {
+                array_push( $scopes, $name.'-write-allowed' );
+            }
+            if( $permission->delete ) {
+                array_push( $scopes, $name.'-delete-allowed' );
+            }
+        } else {
+            if( $permission->read ) {
+                $scopes[ $name.'-read-allowed' ] = 'Allows reading of'.$name;
+            }
+            if( $permission->write ) {
+                $scopes[ $name.'-write-allowed' ] = 'Allows creation/update of'.$name;
+            }
+            if( $permission->delete ) {
+                $scopes[ $name.'-delete-allowed' ] = 'Allows deletion of'.$name;
+            }
         }
 
-        return $scope;
+        return $scopes;
     }
 
-    protected function getPermissions( $role_id ) {
+    protected function getPermissions( $role_id ) 
+    {
+        if( is_null( $role_id ) ) {
+            return $this->repo->all();
+        }
         return $this->repo->getByAttributes( [ 'role_id' => $role_id ] );
     }
 
-    public function getScope( $user ) {
+    protected function permissionsToScopes( $permissions, $asArray = true ) {
+        $scopes = [];
+        foreach( $permissions as $permission ) {
+            $scopes = array_merge( $scopes, $this->permissionToScopes( $permission, $asArray ) );
+        }
+
+        return $scopes;
+    }
+
+    public function getScope( $user, $inString = true, $separator = ', ' ) {
         if( is_null( $user ) ) {
             return '';
         }
 
-        $scope = '';
         $permissions = $this->getPermissions( $user->role_id );
-        foreach( $permissions as $permission ) {
-            $scope = $scope.($this->permissionToScopes( $permission ) );
+        $scopes = $this->permissionsToScopes( $permissions );    
+
+        if(!$inString ) {
+            return $scopes;
+        }
+        
+        return implode( $separator, $scopes );
+    }
+
+    public function getAllScopes( $inString = true, $separator = ', ' ) {
+        $permissions = $this->getPermissions( null );
+        $scopes      = $this->permissionsToScopes( $permissions, false );
+
+        if( !$inString ) {
+            return $scopes;
         }
 
-        return trim( $scope );
+        return implode( $separator, $scopes );
     }
 }
